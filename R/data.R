@@ -62,3 +62,12 @@ data_line = function(x, y, series = NULL) {
   }
   data_bar(x, y, series, type = 'line')
 }
+
+
+data_K = function(x, y, series=NULL){
+  # only support 1-serie K chart
+  # y should be a N*4 matrix or data.frame 
+  obj = list()
+  obj[[1]] = list(name = 'K', type = 'k', data = unname(as.matrix(y)))
+  obj
+}

@@ -103,3 +103,31 @@ getDependency = function(type) {
 getMeta = function(chart) {
   attr(chart$x, 'meta', exact = TRUE)
 }
+
+
+#' Create the K chart
+#' @export 
+ekchart = function( data = NULL, x = NULL, type = 'k',
+                    width = NULL, height = NULL, ...) {
+  
+  if (is.null(x)) 
+    x = seq(nrow(data)) 
+  else
+    x = evalFormula(x, data)      ## FIXME: Find the Date/DateTime information, and reformat.
+  
+  y = data[,c("o","c","l","h")] ## FIXME: Find the ohlc price in data
+  
+  params = structure(list(
+    series = data_K(x, y),
+    xAxis = list(type='category',data=x), yAxis = list(type='value')
+  ), meta = list(
+    x = x, y = y
+  ))
+  
+  chart = htmlwidgets::createWidget(
+    'echarts', params, width = width, height = height, package = 'recharts',
+    dependencies = getDependency(NULL)
+  )
+  
+  chart %>% tooltip(trigger='axis') %>% dataZoom() %>% toolbox()
+}

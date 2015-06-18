@@ -11,7 +11,7 @@ eScatter = function(chart, ...) {
 }
 
 eK = function(chart, ...) {
-
+  
 }
 
 ePie = function(chart, ...) {
