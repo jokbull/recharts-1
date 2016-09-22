@@ -30,37 +30,54 @@ echart.data.frame = function(
   width = NULL, height = NULL, ...
 ) {
 
+  # these three are only names.
   xlab = autoArgLabel(x, deparse(substitute(x)))
   ylab = autoArgLabel(y, deparse(substitute(y)))
+  seriesName = autoArgLabel(series, deparse(substitute(series)))
+
 
   x = evalFormula(x, data)
   y = evalFormula(y, data)
+  series = evalFormula(series, data)
+
+
+
   if (type == 'auto') type = determineType(x, y)
   if (type == 'bar') {
     x = as.factor(x)
     if (is.null(y)) ylab = 'Frequency'
   }
 
-  series = evalFormula(series, data)
-  data_fun = getFromNamespace(paste0('data_', type), 'recharts')
+  param_fun = getFromNamespace(paste0('param_', type), 'recharts')
 
-  params = structure(list(
-    series = data_fun(x, y, series),
-    xAxis = list(), yAxis = list()
-  ), meta = list(
-    x = x, y = y
-  ))
+  # params = structure(list(
+  #   series = data_fun(data, x, y, series = series, xlabName = xlab, ylabName = ylab, seriesName = seriesName),
+  #   xAxis = list(), yAxis = list(),
+  #   size = c(width, height)
+  # ), meta = list(
+  #   x = x, y = y
+  # ))
+  params = param_fun(data, x, y, series = series, xlabName = xlab, ylabName = ylab, seriesName = seriesName, ...)
+
+  params$size = c(width, height)
 
   if (!is.null(series)) {
     params$legend = list(data = levels(as.factor(series)))
   }
 
+
   chart = htmlwidgets::createWidget(
     'echarts', params, width = width, height = height, package = 'recharts',
-    dependencies = getDependency(NULL)
+    dependencies = getDependency(NULL),
+    preRenderHook = function(instance) {
+      instance
+    }
   )
 
-  chart %>% eAxis('x', name = xlab) %>% eAxis('y', name = ylab)
+  adjust_fun = getFromNamespace(paste0('adjust_', type), 'recharts')
+
+  adjust_fun(chart, ...)
+
 }
 
 #' @export
@@ -105,29 +122,3 @@ getMeta = function(chart) {
 }
 
 
-#' Create the K chart
-#' @export 
-ekchart = function( data = NULL, x = NULL, type = 'k',
-                    width = NULL, height = NULL, ...) {
-  
-  if (is.null(x)) 
-    x = seq(nrow(data)) 
-  else
-    x = evalFormula(x, data)      ## FIXME: Find the Date/DateTime information, and reformat.
-  
-  y = data[,c("o","c","l","h")] ## FIXME: Find the ohlc price in data
-  
-  params = structure(list(
-    series = data_K(x, y),
-    xAxis = list(type='category',data=x), yAxis = list(type='value')
-  ), meta = list(
-    x = x, y = y
-  ))
-  
-  chart = htmlwidgets::createWidget(
-    'echarts', params, width = width, height = height, package = 'recharts',
-    dependencies = getDependency(NULL)
-  )
-  
-  chart %>% tooltip(trigger='axis') %>% dataZoom() %>% toolbox()
-}

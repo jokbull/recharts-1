@@ -15,7 +15,9 @@ Description: Provides an R interface to the JavaScript library ECharts for
 Imports:
     htmltools,
     htmlwidgets (>= 0.4),
-    magrittr
+    magrittr,
+    jsonlite,
+    rlist
 Suggests:
     knitr,
     rmarkdown,
@@ -23,3 +25,4 @@ Suggests:
 License: MIT + file LICENSE
 LazyData: TRUE
 VignetteBuilder: knitr
+RoxygenNote: 5.0.1

@@ -1,3 +1,24 @@
+
+data_pie = function(x, y, series = NULL, type = 'pie') {
+  if (is.null(series)) {
+    xy=data.frame(name=x,value=y)
+  } else {
+    xy=data.frame(name=series,value=y)
+  }
+  xy$name=as.character(xy$name)
+  data1=list()
+  for (i in 1:dim(xy)[1]){
+    data1[[i]]=list(name=xy[i,1],value=xy[i,2])
+  }
+  return(list(list(type = type,
+                   showScale = TRUE,
+                   showScaleText = TRUE,
+                   data = data1
+  )))
+}
+
+
+
 # split the data matrix for a scatterplot by series
 data_scatter = function(x, y, series = NULL, type = 'scatter') {
   xy = unname(cbind(x, y))
@@ -49,24 +70,10 @@ data_bar = function(x, y, series = NULL, type = 'bar') {
 
 }
 
-data_line = function(x, y, series = NULL) {
-  if (is.null(x) && is.ts(y)) {
-    x = as.numeric(time(y))
-    y = as.numeric(y)
-  }
-  if (is.numeric(x)) {
-    return(data_scatter(x, y, series, type = 'line'))
-  }
-  if (is.null(series)) {
-    return(list(list(type = 'line', data = y)))
-  }
-  data_bar(x, y, series, type = 'line')
-}
-
 
 data_K = function(x, y, series=NULL){
   # only support 1-serie K chart
-  # y should be a N*4 matrix or data.frame 
+  # y should be a N*4 matrix or data.frame
   obj = list()
   obj[[1]] = list(name = 'K', type = 'k', data = unname(as.matrix(y)))
   obj

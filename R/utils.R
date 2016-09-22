@@ -35,3 +35,63 @@ autoArgLabel = function(arg, auto) {
   if (inherits(arg, 'formula')) return(deparse(arg[[2]]))
   auto
 }
+
+strstrip <- function(string, side = c("both", "left", "right")) {
+  side <- match.arg(side)
+  pattern <- switch(side, left = "^\\s+", right = "\\s+$", both = "^\\s+|\\s+$")
+  OUT <- gsub(pattern, "", string)
+  return(OUT)
+}
+
+
+matchPos.x <- function(x){
+  X <- tryCatch({
+    x <- as.numeric(x)
+    x <- ifelse(is.na(x), "", x)
+    return(x)
+  },warning = function(w){
+    match.arg(x,c("center", "left", "right"))
+  })
+  return(X)
+}
+
+matchPos.y <- function(y){
+  Y <- tryCatch({
+    y <- as.numeric(y)
+    y <- ifelse(is.na(y), "", y)
+    return(y)
+  },warning = function(w){
+    match.arg(y,c("bottom", "center", "top"))
+  })
+  return(Y)
+}
+
+.addClass <- function(chart, className){
+  class(chart) <- c(class(chart), className )
+  return(chart)
+}
+
+unnames = function(x){
+  names(x) = NULL
+  return(x)
+}
+
+
+
+
+regJson <- function(txt,...) {
+  txt = stringr::str_replace_all(txt,"(\\w+)(:)","\"\\1\"\\2")
+  txt = stringr::str_replace_all(txt,"\'","\"")
+  if (is.na(stringr::str_match(txt, "^\\{"))){
+    txt = paste0("{",txt, "}")
+  }
+  txt
+}
+
+
+
+
+
+
+
+
