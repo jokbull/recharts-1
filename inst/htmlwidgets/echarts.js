@@ -1,18 +1,18 @@
 HTMLWidgets.widget({
   name: 'echarts',
   type: 'output',
+  factory: function(el, width, height) {
+    var sig = echarts.init(el);
+    return {
+      renderValue: function(x) {
+        sig.setOption(x, true);
+      //instance.setTheme(eval(x.theme + "Theme"));
 
-  initialize: function(el, width, height) {
-    return echarts.init(el);
-  },
-	
-  renderValue: function(el, x, instance) {
-    instance.setOption(x, true);
-	//instance.setTheme(eval(x.theme + "Theme"));
+      },
 
-  },
-
-  resize: function(el, width, height, instance) {
+      resize: function(width, height) {
+      },
+      s: sig
+    }
   }
-
 });

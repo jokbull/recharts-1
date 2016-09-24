@@ -33,7 +33,25 @@ param_line = function(dat, x, y, series, ...) {
     rownames(plotData) <- tempD[,1]
   }
 
+
+  xAxis = list()
+  yAxis = list()
+  if (is.numeric(xvar)) {
+    xAxis$data = xvar
+  } else {
+    xAxis$data = rownames(plotData)
+  }
+  xAxis$type = axisType(xAxis$data,'x')
+
+  if (is.numeric(yvar)) {
+    yAxis$data = yvar
+  } else {
+    yAxis$data = colnames(plotData)
+  }
+  yAxis$type = axisType(yAxis$data,'y')
+
   optseries = vector("list", ncol(plotData))
+
   for(i in 1:ncol(plotData)) {
     if(is.null(optseries[[i]]$type)) {
       optseries[[i]]$type = 'line'
@@ -51,24 +69,14 @@ param_line = function(dat, x, y, series, ...) {
     }
   }
 
-  xAxis = list(type = ifelse(is.numeric(xvar),  "value", "category"))
-  yAxis = list(type = ifelse(is.numeric(yvar),  "value", "category"))
-  xAxis$data = ifelse(is.numeric(xvar), xvar , rownames(plotData))
-  yAxis$data = ifelse(is.numeric(yvar), yvar , colnames(plotData))
 
-  if(!is.numeric(xvar)){
-    xAxis$data = rownames(plotData)
-  }
-  if(!is.numeric(yvar)){
-    yAxis$data = colnames(plotData)
-  }
 
 
   structure(list(
     series = optseries,
     xAxis = xAxis, yAxis = yAxis
   ), meta = list(
-    x = xvar, y = yvar
+    x = xAxis$data, y = yAxis$data
   ))
 
 }
@@ -99,16 +107,45 @@ param_k = function(dat, x, y, series, ...) {
     close= evalFormula(y, dat)
   }
   xvar = evalFormula(x, dat)
-  plotData = cbind(open,close,high,low)
+  plotData = cbind(open,close,low,high)
 
   optseries = list(type="candlestick","data" = plotData)
   xAxis = list(type = "category", "data" = xvar)
   yAxis = list(type = "value", scale=TRUE)
 
-  structure(list(
+  if (!is.null(volume)) {
+    xAxis2 = xAxis
+    xAxis2$gridIndex = 1
+
+
+    xAxis = list(xAxis, xAxis2)
+    yAxis2 = yAxis
+    yAxis2 = rlist::list.merge(yAxis2, list(
+      gridIndex=1,
+      axisLabel=list(show=FALSE),
+      axisLine=list(show=FALSE),
+      axisTick=list(show=FALSE),
+      splitLine=list(show=FALSE)
+    ))
+    yAxis = list(yAxis,yAxis2)
+    optseries = list(optseries, list(
+      type="bar",
+      name="Volume",
+      xAxisIndex=1,
+      yAxisIndex=1,
+      data = volume
+    ))
+  }
+
+
+  res = structure(list(
     series = optseries,
     xAxis = xAxis, yAxis = yAxis
   ), meta = list(
     x = xvar, y = plotData
   ))
+  if (!is.null(volume)) {
+    res[["grid"]] = list(list(left="10%",right="8%",height="50%"),list(left="10%",right="8%",top="63%",height="16%"))
+  }
+  res
 }

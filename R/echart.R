@@ -27,57 +27,55 @@ echart.list = function(data, width = NULL, height = NULL, ...) {
 #' @rdname eChart
 echart.data.frame = function(
   data = NULL, x = NULL, y = NULL, series = NULL, type = 'auto',
-  width = NULL, height = NULL, ...
+  width = NULL, height = NULL, theme = c("macarons","infographic","dark","roma","shine","vintage"),
+  dependency = NULL, ...
 ) {
 
-  # these three are only names.
-  xlab = autoArgLabel(x, deparse(substitute(x)))
-  ylab = autoArgLabel(y, deparse(substitute(y)))
-  seriesName = autoArgLabel(series, deparse(substitute(series)))
 
+  settings = list(...)
+  theme = match.arg(theme)
+  #
+  type = tolower(type)
 
-  x = evalFormula(x, data)
-  y = evalFormula(y, data)
-  series = evalFormula(series, data)
-
-
-
-  if (type == 'auto') type = determineType(x, y)
-  if (type == 'bar') {
-    x = as.factor(x)
-    if (is.null(y)) ylab = 'Frequency'
+  if (type == 'auto') {
+    stop("Sorry, not support auto temporarily.")
+    #type = determineType(x, y)
+    return(invisible(NULL))
+  } else if (type == "line") {
+    print(paste0("YES, I KNOW THIS TYPE:",type))
+  } else if (type == "k") {
+    print(paste0("YES, I KNOW THIS TYPE:",type))
+  } else {
+    print("Sorry, not support ", type, "temporarily.")
+    print("line, k")
+    return(invisible(NULL))
   }
 
   param_fun = getFromNamespace(paste0('param_', type), 'recharts')
-
-  # params = structure(list(
-  #   series = data_fun(data, x, y, series = series, xlabName = xlab, ylabName = ylab, seriesName = seriesName),
-  #   xAxis = list(), yAxis = list(),
-  #   size = c(width, height)
-  # ), meta = list(
-  #   x = x, y = y
-  # ))
-  params = param_fun(data, x, y, series = series, xlabName = xlab, ylabName = ylab, seriesName = seriesName, ...)
-
+  params = param_fun(data, x, y, series, ...)
   params$size = c(width, height)
 
-  if (!is.null(series)) {
-    params$legend = list(data = levels(as.factor(series)))
-  }
-
+  #   if (!is.null(series)) {
+  #     params$legend = list(data = levels(as.factor(series)))
+  #   }
 
   chart = htmlwidgets::createWidget(
     'echarts', params, width = width, height = height, package = 'recharts',
-    dependencies = getDependency(NULL),
+    elementId = "A",
+    #dependencies = getDependency(dependency),
+    dependencies = getTheme(theme),
     preRenderHook = function(instance) {
       instance
     }
   )
+  class(chart) <- c(class(chart), "echarts" )
 
-  adjust_fun = getFromNamespace(paste0('adjust_', type), 'recharts')
+  if (hasArg("options")) {
+    chart = Reduce(setOptionsFromJson, x = settings$options ,init = chart)
+  }
 
-  adjust_fun(chart, ...)
-
+  defaultSetting_fun = getFromNamespace(paste0('defaultSetting_', type), 'recharts')
+  defaultSetting_fun(chart)
 }
 
 #' @export
@@ -116,6 +114,16 @@ getDependency = function(type) {
     script = sprintf('%s.js', type)
   )
 }
+
+getTheme = function(theme) {
+  htmltools::htmlDependency(
+    'echarts-module', EChartsVersion,
+    src = system.file('htmlwidgets/lib/echarts/theme', package = 'recharts'),
+    script = sprintf('%s.js', theme)
+  )
+}
+
+
 
 getMeta = function(chart) {
   attr(chart$x, 'meta', exact = TRUE)

@@ -2,6 +2,21 @@
 .emptyList = setNames(list(), character())
 emptyList = function() .emptyList
 
+
+
+
+# guess the axisType
+axisType = function(data, which = c('x', 'y')) {
+  if (is.numeric(data) || is.null(data)) return('value')
+  if (is.factor(data) || is.character(data)) return('category')
+  if (inherits(data, 'Date')) return('time')
+  message('The structure of the ', which, ' variable:')
+  str(data)
+  stop('Unable to derive the axis type automatically from the ', which, ' variable')
+}
+
+
+
 # evaluate a formula using `data` as the environment, e.g. evalFormula(~ z + 1,
 # data = data.frame(z = 1:10))
 evalFormula = function(x, data) {
@@ -36,12 +51,7 @@ autoArgLabel = function(arg, auto) {
   auto
 }
 
-strstrip <- function(string, side = c("both", "left", "right")) {
-  side <- match.arg(side)
-  pattern <- switch(side, left = "^\\s+", right = "\\s+$", both = "^\\s+|\\s+$")
-  OUT <- gsub(pattern, "", string)
-  return(OUT)
-}
+
 
 
 matchPos.x <- function(x){
@@ -76,10 +86,8 @@ unnames = function(x){
   return(x)
 }
 
-
-
-
 regJson <- function(txt,...) {
+  txt = stringr::str_trim(txt)
   txt = stringr::str_replace_all(txt,"(\\w+)(:)","\"\\1\"\\2")
   txt = stringr::str_replace_all(txt,"\'","\"")
   if (is.na(stringr::str_match(txt, "^\\{"))){

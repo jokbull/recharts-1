@@ -1,6 +1,6 @@
 dependencies:
   - name: echarts
-    version: 3.2.2
+    version: 3.2.3
     src: htmlwidgets/lib/echarts
     script: echarts.min.js
   - name: d3
