@@ -2,14 +2,23 @@
 
 defaultSetting_common = function(chart, ...) {
 
-  if ("data" %in% names(chart$x$series)) {
+  if ("type" %in% names(chart$x$xAxis)) {
     seriesNumber = 1
-
   } else {
-    seriesNumber = length(chart$x$series)
-
+    seriesNumber = length(chart$x$xAxis)
   }
+  if ("data" %in% names(chart$x$series)) {
+    legendName = NULL
+  } else {
+    legendName = sapply(chart$x$series,function(x) x$name)
+  }
+
+
   newop = list(
+    legend = list(
+      data = legendName
+    ),
+
     toolbox = list(
       feature=list(
         saveAsImage=list(),
@@ -68,6 +77,38 @@ defaultSetting_line = function(chart, ...) {
   ))
 }
 
+
+
+defaultSetting_scatter= function(chart, ...) {
+  # plotData = getMeta(chart)
+  # xvar = plotData$x
+  # yvar = plotData$y
+  setOptions(defaultSetting_common(chart),list(
+    tooltip = list(
+      trigger = "axis"
+    )
+  ))
+}
+
+
+defaultSetting_bar= function(chart, ...) {
+  setOptions(defaultSetting_common(chart),list(
+    tooltip = list(
+      trigger = "axis"
+    ),
+    toolbox = list(
+      feature = list(
+        magicType = list(
+          type = c("stack","tiled")
+        ),
+        dataView = list(),
+        saveAsImage = list()
+      )
+    )
+  ))
+}
+
+
 defaultSetting_k = function(chart, ...) {
   newop = list(
     legendHoverLink = TRUE,
@@ -97,6 +138,7 @@ defaultSetting_k = function(chart, ...) {
   )
   chart = defaultSetting_common(chart)
   if ("data" %in% names(chart$x$series) ) {
+    chart$x$title = list(text=chart$x$series$name)
     chart$x$series = rlist::list.merge(chart$x$series,newop)
     # chart$x$tooltip = rlist::list.merge(chart$x$tooltip,
     #       list(formatter = JS(
@@ -115,6 +157,7 @@ defaultSetting_k = function(chart, ...) {
     # )))
 
   } else {
+    chart$x$title = list(text=chart$x$series[[1]]$name)
     chart$x$series[[1]] = rlist::list.merge(chart$x$series[[1]],newop)
   #   chart$x$tooltip = rlist::list.merge(chart$x$tooltip,
   #                                       list(formatter = JS(
@@ -132,6 +175,7 @@ defaultSetting_k = function(chart, ...) {
   #
   #                                       )))
   }
+
 
   chart
 }

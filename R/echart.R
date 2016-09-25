@@ -5,7 +5,6 @@
 #' and customize options later. \code{eChart()} is an alias of \code{echart()}.
 #' @param data a data object (usually a data frame or a list)
 #' @rdname eChart
-#' @export
 #' @examples library(recharts)
 #' echart(iris, ~ Sepal.Length, ~ Sepal.Width)
 #' echart(iris, ~ Sepal.Length, ~ Sepal.Width, series = ~ Species)
@@ -13,7 +12,7 @@ echart = function(data, ...) {
   UseMethod('echart')
 }
 
-#' @export
+
 #' @rdname eChart
 echart.list = function(data, width = NULL, height = NULL, ...) {
   htmlwidgets::createWidget(
@@ -23,7 +22,6 @@ echart.list = function(data, width = NULL, height = NULL, ...) {
 
 #' @param x the x variable
 #' @param y the y variable
-#' @export
 #' @rdname eChart
 echart.data.frame = function(
   data = NULL, x = NULL, y = NULL, series = NULL, type = 'auto',
@@ -45,9 +43,12 @@ echart.data.frame = function(
     print(paste0("YES, I KNOW THIS TYPE:",type))
   } else if (type == "k") {
     print(paste0("YES, I KNOW THIS TYPE:",type))
+  } else if (type == "scatter") {
+    print(paste0("YES, I KNOW THIS TYPE:",type))
+  } else if (type == "bar") {
+    print(paste0("YES, I KNOW THIS TYPE:",type))
   } else {
     print("Sorry, not support ", type, "temporarily.")
-    print("line, k")
     return(invisible(NULL))
   }
 
@@ -61,7 +62,6 @@ echart.data.frame = function(
 
   chart = htmlwidgets::createWidget(
     'echarts', params, width = width, height = height, package = 'recharts',
-    elementId = "A",
     #dependencies = getDependency(dependency),
     dependencies = getTheme(theme),
     preRenderHook = function(instance) {
@@ -78,11 +78,11 @@ echart.data.frame = function(
   defaultSetting_fun(chart)
 }
 
-#' @export
+
 #' @rdname eChart
 echart.default = echart.data.frame
 
-#' @export
+
 #' @rdname eChart
 eChart = echart
 # from the planet of "Duo1 Qiao1 Yi1 Ge4 Jian4 Hui4 Si3" (will die if having to

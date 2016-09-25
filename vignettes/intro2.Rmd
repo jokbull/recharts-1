@@ -1,0 +1,107 @@
+---
+title: "recharts_examples"
+author: "scrat"
+date: "2016年9月25日"
+output: html_document
+html_notebook: default
+---
+
+```{r setup} 
+library(recharts)
+```
+
+## K chart
+Prepare data, volume, attr("symbol") is optional.
+
+```{r OHLC data}
+dt = data.table(datetime=as.Date("2016-01-01")+1:20,
+                open = 1:20 + rnorm(20) * 5,
+                close = 1:20 + rnorm(20) * 5,
+                volume = runif(20) * 1000
+)
+dt[,high:=pmax(open,close)+runif(20)*10]
+dt[,low:=pmin(open,close)-runif(20)*10]
+attr(dt,"symbol") = "中国平安"
+```
+Plot, OHLC
+```{r candlestick }
+eK(dt,x=~datetime, open=~open, high=~high, low=~low, close=~close, volume = NULL)
+```
+
+Plot,  OHLC_V + markLine
+```{r candlestick + volume bar} 
+k2=eK(dt,x=~datetime, open=~open, high=~high, low=~low, close=~close, volume = ~volume)
+k2
+```
+
+add MarkLine, color,symbol,symbolRotate,width,type are optional
+```{R}
+mldf1 = data.frame(x0=c("2016-01-02","2016-01-17"),y0=c(30,30), x=c("2016-01-05","2016-01-20"),y=c(20,40), color=c("steelblue","orange"), symbol="pin", symbolRotate=c(0,180), width=1,type="solid")
+
+addMarkLine(k2, mldf1)
+```
+
+
+MarkPoints, color, symbol, symbolRotate are optional.
+```{r}
+mpdf1 = data.frame(x=c("2016-01-02","2016-01-20"),y=c(30,30), color=c("steelblue","orange"), symbol="pin", symbolRotate=c(0,180))
+addMarkPoint(k2,mpdf1, series = 1)
+addMarkPoint(k2,mpdf1, series = 2)
+```
+
+## Line Chart
+
+```{r}
+k3 = eLine(dt,x=~datetime, y=~high)
+k3
+addMarkPoint(k3, mpdf1)
+```
+
+Sugar, Chart + eXXXXX to set Options.
+```{r}
+k3 + eTitle(text="BLABLABLA")
+```
+
+Sugar, Chart + Vector
+```{r}
+k3 + rep(20,20)
+```
+
+## SCATTER Chart
+Default is jitter mode. When more than 2000 points, the echart will make optimization.
+
+```{r}
+n=3000
+dt2 = data.table(x=c(1:n,1:n), y=c(sin((1:n)/100),cos((1:n)/100))+rnorm(2*n,sd=0.1), label=c(rep("sin",n),rep("cos",n)))
+eScatter(dt2,x=~x,y=~y,~label,symbolSize=1)
+newSeriesDF = data.frame(x=1:n,y=rep(0.25,n))
+addSeries(eScatter(dt2,x=~x,y=~y,series=~label,symbolSize=3),newSeriesDF)
+```
+
+
+## Bar Chart / HISTOGRAMS Chart
+
+x is category, numeric. numeric breaks into category..
+
+```{r}
+dt3 = sample(LETTERS,size = 100,replace = TRUE)
+eBar(data.frame(x=dt3), x=~x)
+
+dt4 = data.frame(x=sample(LETTERS,size = 200,replace = TRUE),
+                 label = sample(c(0,1),size=200,replace=TRUE)
+                 )
+eBar(dt4, x=~x, y=NULL, series=~label)
+```
+
+
+## Add New Series
+When add Series, Legend not update...
+
+attr(yAxis) is optional.
+```{r}
+newSeries = list(data=rep(20,20)+rnorm(20),name = "new")
+attr(newSeries, "yAxis") = list(min=15,max=25,type="value")
+addSeries(k3, newSeries)
+```
+
+
