@@ -2,12 +2,17 @@
 title: "recharts_examples"
 author: "scrat"
 date: "2016年9月25日"
-output: html_document
 html_notebook: default
+vignette: >
+  %\VignetteIndexEntry{Introduce}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup} 
+library(rmarkdown)
 library(recharts)
+library(data.table)
 ```
 
 ## K chart

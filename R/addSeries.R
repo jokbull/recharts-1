@@ -34,14 +34,18 @@ addSeries = function(chart,data,...){
     attr(res,"yAxis") = yAxis
   }
 
+  XAxisHaveData = FALSE
   if ("type" %in% names(chart$x$xAxis)) {
     if ("data" %in% names(chart$x$xAxis)) {
       XAxisHaveData = TRUE
-    } else {
-      XAxisHaveData = FALSE
     }
   } else {
-    stop("PLEASE ASSIGN WHICH XAXIS IS USED")
+    if ("data" %in% names(chart$x$xAxis[[1]]))
+    {
+      XAxisHaveData = TRUE
+    } else {
+      warning("NOT ASSIGN XAXIS, DEFAULT IS THE FIRST XAXIS")
+    }
   }
 
   if (!XAxisHaveData) {
