@@ -14,13 +14,13 @@ param_line = function(dat, x, y, series, ...) {
   if(is.null(xvar) & is.null(yvar) & !is.factor(dat)){
     # Mode 1. use default data.frame as input...
     plotData <- as.data.frame(dat, stringsAsFactor=F)
-  }else if(!is.null(xvar) & !is.null(yvar) & !is.null(series)){
+  }else if(!is.null(xvar) & !is.null(yvar) & !is.null(seriesData)){
     # Mode 2. all of xvar, yvar and series are valid...
     xvarArray = unique(as.character(xvar))
-    seriesArray = unique(as.character(series))
+    seriesArray = unique(as.character(seriesData))
     dataMatrix = xtabs(as.formula(paste0(ylabName, "~", xlabName , "+",  seriesName)), dat)
     plotData <- as.data.frame.matrix(dataMatrix[xvarArray,seriesArray])
-  }else if(!is.null(xvar) & !is.null(yvar) & is.null(series)){
+  }else if(!is.null(xvar) & !is.null(yvar) & is.null(seriesData)){
     # Mode 3. format dat with only x and y variable.
     plotData <- data.frame(val = yvar)
     colnames(plotData) <- ylabName
