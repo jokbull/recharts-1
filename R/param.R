@@ -11,21 +11,21 @@ param_line = function(dat, x, y, series, ...) {
   ylabName = autoArgLabel(y, deparse(substitute(y)))
   seriesName = autoArgLabel(series, deparse(substitute(series)))
 
-  if(is.null(xvar) & is.null(yvar) & !is.factor(dat)){
+  if (is.null(xvar) & is.null(yvar) & !is.factor(dat)) {
     # Mode 1. use default data.frame as input...
-    plotData <- as.data.frame(dat, stringsAsFactor=F)
-  }else if(!is.null(xvar) & !is.null(yvar) & !is.null(seriesData)){
+    plotData <- as.data.frame(dat, stringsAsFactor = F)
+  } else if (!is.null(xvar) & !is.null(yvar) & !is.null(seriesData)) {
     # Mode 2. all of xvar, yvar and series are valid...
     xvarArray = unique(as.character(xvar))
     seriesArray = unique(as.character(seriesData))
-    dataMatrix = xtabs(as.formula(paste0(ylabName, "~", xlabName , "+",  seriesName)), dat)
+    dataMatrix = xtabs(as.formula(paste0(ylabName, "~", xlabName , "+",  seriesName)), data = dat, na.action = na.pass)
     plotData <- as.data.frame.matrix(dataMatrix[xvarArray,seriesArray])
-  }else if(!is.null(xvar) & !is.null(yvar) & is.null(seriesData)){
+  } else if (!is.null(xvar) & !is.null(yvar) & is.null(seriesData)) {
     # Mode 3. format dat with only x and y variable.
     plotData <- data.frame(val = yvar)
     colnames(plotData) <- ylabName
     rownames(plotData) <- xvar
-  }else if(is.null(xvar) & is.null(yvar) & is.factor(dat)){
+  } else if (is.null(xvar) & is.null(yvar) & is.factor(dat)) {
     # Mode 4. factor
     tempD <- as.data.frame(table(dat))
     plotData <- data.frame(val = tempD[,"Freq"])
@@ -52,17 +52,17 @@ param_line = function(dat, x, y, series, ...) {
 
   optseries = vector("list", ncol(plotData))
 
-  for(i in 1:ncol(plotData)) {
-    if(is.null(optseries[[i]]$type)) {
+  for (i in 1:ncol(plotData)) {
+    if (is.null(optseries[[i]]$type)) {
       optseries[[i]]$type = 'line'
     }
-    if(is.null(optseries[[i]]$name)) {
+    if (is.null(optseries[[i]]$name)) {
       optseries[[i]]$name = colnames(plotData)[i]
     } else {
       warning('You can set series:name with colnames(dat).')
     }
 
-    if(is.null(optseries[[i]]$data)) {
+    if (is.null(optseries[[i]]$data)) {
       optseries[[i]]$data = unnames(plotData[,i])
     } else {
       warning('You can set series:data with dat.')
@@ -103,16 +103,16 @@ param_k = function(dat, x, y, series, ...) {
   high = evalFormula(settings$high, dat)
   low  = evalFormula(settings$low, dat)
   if (hasArg("close")) {
-    close= evalFormula(settings$close, dat)
+    close = evalFormula(settings$close, dat)
   } else {
-    close= evalFormula(y, dat)
+    close = evalFormula(y, dat)
   }
   xvar = evalFormula(x, dat)
   plotData = cbind(open,close,low,high)
 
-  optseries = list(type="candlestick","data" = plotData,name=seriesName)
+  optseries = list(type = "candlestick","data" = plotData,name = seriesName)
   xAxis = list(type = "category", "data" = xvar)
-  yAxis = list(type = "value", scale=TRUE)
+  yAxis = list(type = "value", scale = TRUE)
 
   if (!is.null(volume)) {
     xAxis2 = xAxis
@@ -122,18 +122,18 @@ param_k = function(dat, x, y, series, ...) {
     xAxis = list(xAxis, xAxis2)
     yAxis2 = yAxis
     yAxis2 = rlist::list.merge(yAxis2, list(
-      gridIndex=1,
-      axisLabel=list(show=FALSE),
-      axisLine=list(show=FALSE),
-      axisTick=list(show=FALSE),
-      splitLine=list(show=FALSE)
+      gridIndex = 1,
+      axisLabel = list(show = FALSE),
+      axisLine = list(show = FALSE),
+      axisTick = list(show = FALSE),
+      splitLine = list(show = FALSE)
     ))
     yAxis = list(yAxis,yAxis2)
     optseries = list(optseries, list(
-      type="bar",
-      name="Volume",
-      xAxisIndex=1,
-      yAxisIndex=1,
+      type = "bar",
+      name = "Volume",
+      xAxisIndex = 1,
+      yAxisIndex = 1,
       data = volume
     ))
   }
@@ -146,7 +146,7 @@ param_k = function(dat, x, y, series, ...) {
     x = xvar, y = plotData
   ))
   if (!is.null(volume)) {
-    res[["grid"]] = list(list(left="10%",right="8%",height="50%"),list(left="10%",right="8%",top="63%",height="16%"))
+    res[["grid"]] = list(list(left = "10%",right = "8%",height = "50%"),list(left = "10%",right = "8%",top = "63%",height = "16%"))
   }
   res
 }
@@ -162,7 +162,7 @@ param_scatter = function(dat, x, y, series, coordinateSystem = "cartesian2d",...
   # }
 
   if (hasArg(symbolSize)) {
-    symbolSize =list(...)$symbolSize
+    symbolSize = list(...)$symbolSize
   } else {
     symbolSize = 10
   }
@@ -185,8 +185,8 @@ param_scatter = function(dat, x, y, series, coordinateSystem = "cartesian2d",...
   if (is.null(series)) {
     optseries = list(
       data = cbind(xvar,yvar),
-      type=type,
-      large=TRUE,
+      type = type,
+      large = TRUE,
       coordinateSystem=coordinateSystem)
   } else {
     plotData = split(as.data.frame(cbind(xvar,yvar)), seriesData)

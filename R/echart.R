@@ -71,7 +71,7 @@ echart.data.frame = function(
   class(chart) <- c(class(chart), "echarts" )
 
   if (hasArg("options")) {
-    chart = Reduce(setOptionsFromJson, x = settings$options ,init = chart)
+    chart = Reduce(setOptions, x = settings$options ,init = chart)
   }
 
   defaultSetting_fun = getFromNamespace(paste0('defaultSetting_', type), 'recharts')
