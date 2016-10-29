@@ -68,6 +68,10 @@ echart.data.frame = function(
       instance
     }
   )
+
+  chart$x$animation = FALSE
+
+
   class(chart) <- c(class(chart), "echarts" )
 
   if (hasArg("options")) {
