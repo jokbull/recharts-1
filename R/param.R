@@ -14,41 +14,75 @@ param_line = function(dat, x, y, series, ...) {
   if (is.null(xvar) & is.null(yvar) & !is.factor(dat)) {
     # Mode 1. use default data.frame as input...
     plotData <- as.data.frame(dat, stringsAsFactor = F)
+    warning("xvar/yvar are both null")
+    return(NULL)
   } else if (!is.null(xvar) & !is.null(yvar) & !is.null(seriesData)) {
     # Mode 2. all of xvar, yvar and series are valid...
-    xvarArray = unique(as.character(xvar))
+    xvar = unique(as.character(xvar))
     seriesArray = unique(as.character(seriesData))
     dataMatrix = xtabs(as.formula(paste0(ylabName, "~", xlabName , "+",  seriesName)), data = dat, na.action = na.pass)
-    plotData <- as.data.frame.matrix(dataMatrix[xvarArray,seriesArray])
+    plotData = as.data.frame.matrix(dataMatrix[xvar,seriesArray])
   } else if (!is.null(xvar) & !is.null(yvar) & is.null(seriesData)) {
     # Mode 3. format dat with only x and y variable.
     plotData <- data.frame(val = yvar)
     colnames(plotData) <- ylabName
-    rownames(plotData) <- xvar
-  } else if (is.null(xvar) & is.null(yvar) & is.factor(dat)) {
-    # Mode 4. factor
-    tempD <- as.data.frame(table(dat))
-    plotData <- data.frame(val = tempD[,"Freq"])
-    colnames(plotData) <- "Frequency"
-    rownames(plotData) <- tempD[,1]
+  } else if (!is.null(xvar) & is.null(yvar)) {
+
+    # Mode 4. Density line.
+    if (is.numeric(xvar)) {
+      # continue x-axis to breaks
+      if (is.null(series)) {
+        tmp = hist(xvar, plot = F,...)
+        xvar = as.character(tmp$mids)
+        plotData = cbind(NULL,tmp$counts)
+        colnames(plotData) = "Frequency"
+      } else {
+        univ = hist(xvar, plot = F, ...)
+        univ_breaks = univ$breaks
+        univ_seriesData = names(table(seriesData))
+        plotData = NULL
+        datasets = split(xvar, univ_seriesData)
+        for (i in seq_along(datasets)) {
+          pd = hist(dataset[i],breaks = univ_breaks)$counts
+          plotData = cbind(plotData, pd)
+        }
+        colnames(plotData) = univ_seriesData
+        xvar = as.character(univ$mids)
+      }
+
+    } else if (is.null(series)) {
+      plotData = as.vector(unname(table(xvar)))
+      xvar = list(type='category', data = names(plotData))
+    } else {
+      univ = names(table(xvar))
+      univ_seriesData = names(table(seriesData))
+      plotData = NULL
+      datasets = split(xvar, factor(seriesData,univ_seriesData) )
+      for (i in seq_along(datasets)) {
+        pd = table(factor(datasets[[i]],univ))
+        plotData = cbind(plotData, as.vector(unname(pd)))
+      }
+      xvar = univ
+    }
+
+
+  # } else if (is.null(xvar) & is.null(yvar) & is.factor(dat)) {
+  #   # Mode 4. factor
+  #   tempD <- as.data.frame(table(dat))
+  #   plotData <- data.frame(val = tempD[,"Freq"])
+  #   colnames(plotData) <- "Frequency"
+  #   rownames(plotData) <- tempD[,1]
   }
 
 
-  xAxis = list()
-  yAxis = list()
-  if (is.numeric(xvar)) {
-    xAxis$data = xvar
-  } else {
-    xAxis$data = rownames(plotData)
-  }
-  xAxis$type = axisType(xAxis$data,'x')
-
-  if (is.numeric(yvar)) {
-    yAxis$data = yvar
-  } else {
-    yAxis$data = colnames(plotData)
-  }
-  yAxis$type = axisType(yAxis$data,'y')
+  xAxis = list(
+    data = xvar,
+    type = axisType(xvar,'x')
+  )
+  yAxis = list(
+    data = yvar,
+    type = axisType(yvar,'y')
+  )
 
   optseries = vector("list", ncol(plotData))
 
@@ -237,10 +271,32 @@ param_bar = function(dat, x, y, series,...){
   seriesName = autoArgLabel(series, deparse(substitute(series)))
 
 
-  # plot the frequencies of x when y is not provided
   if (is.null(y)) {
+    # plot the frequencies of x when y is not provided
+    if (is.numeric(xvar)) {
+      if (is.null(series)) {
+        tmp = hist(xvar, plot = F,...)
+        xvar = as.character(tmp$mids)
 
-    if (is.null(series)) {
+        optseries = list(name = "Frequency", data = tmp$counts, type = type)
+        xAxis = list(type='category', data = xvar)
+        yAxis = list(type="value")
+      } else {
+        univ = hist(xvar, plot = F, ...)
+        univ_breaks = univ$breaks
+        univ_seriesData = names(table(seriesData))
+        xvar = as.character(univ$mids)
+        optseries = vector(length(univ_seriesData),"list")
+        xAxis = list(type='category', data = xvar)
+        yAxis = list(type="value")
+        datasets = split(xvar, univ_seriesData)
+        for (i in seq_along(datasets)) {
+          pd = hist(dataset[i],breaks = univ_breaks)$counts
+          optseries[[i]] = list(name = univ_seriesData[i],
+                                data = pd, type = type)
+        }
+      }
+    } else if (is.null(series)) {
       plotData = table(xvar)
       optseries = list(name = ylabName, data = as.vector(unname(plotData)), type = type)
       xAxis = list(type='category', data = names(plotData))
