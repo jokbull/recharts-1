@@ -1,8 +1,8 @@
 Package: recharts
 Type: Package
 Title: An R Interface to ECharts
-Version: 0.0.9.3
-Date: 2017.03.28
+Version: 0.0.9.4
+Date: 2018.06.02
 Authors@R: c(
     person("Scrat", role = "aut"),
     person("Liyun", "Chen", role = "aut"),
@@ -27,4 +27,4 @@ Suggests:
 License: MIT + file LICENSE
 LazyData: TRUE
 VignetteBuilder: knitr
-RoxygenNote: 6.0.0
+RoxygenNote: 6.0.1

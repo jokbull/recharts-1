@@ -40,15 +40,15 @@ echart.data.frame = function(
     #type = determineType(x, y)
     return(invisible(NULL))
   } else if (type == "line") {
-    print(paste0("YES, I KNOW THIS TYPE:",type))
+    suppressMessages(message(paste0("YES, I KNOW THIS TYPE:",type)))
   } else if (type == "k") {
-    print(paste0("YES, I KNOW THIS TYPE:",type))
+    suppressMessages(message(paste0("YES, I KNOW THIS TYPE:",type)))
   } else if (type == "scatter") {
-    print(paste0("YES, I KNOW THIS TYPE:",type))
+    suppressMessages(message(paste0("YES, I KNOW THIS TYPE:",type)))
   } else if (type == "bar") {
-    print(paste0("YES, I KNOW THIS TYPE:",type))
+    suppressMessages(message(paste0("YES, I KNOW THIS TYPE:",type)))
   } else {
-    print("Sorry, not support ", type, "temporarily.")
+    suppressMessages(message("Sorry, not support ", type, "temporarily."))
     return(invisible(NULL))
   }
 
@@ -62,7 +62,6 @@ echart.data.frame = function(
 
   chart = htmlwidgets::createWidget(
     'echarts', params, width = width, height = height, package = 'recharts',
-    #dependencies = getDependency(dependency),
     dependencies = getTheme(theme),
     preRenderHook = function(instance) {
       instance

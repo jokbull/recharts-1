@@ -6,10 +6,13 @@ HTMLWidgets.widget({
     return {
       renderValue: function(x) {
         sig.setOption(x, true);
+      //instance.setTheme(eval(x.theme + "Theme"));
+
       },
 
       resize: function(width, height) {
-      }
-    };
+      },
+      s: sig
+    }
   }
 });

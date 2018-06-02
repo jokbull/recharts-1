@@ -64,27 +64,8 @@
 #'   support the drag-recalculable feature.
 #'   the size
 
-#' Create the scatter chart
-#' @export
-eScatter = function(...) {
-  echart(...,type="scatter")
-}
-#' Create the k chart
-#' @export
-eK = function(...) {
-  echart(...,type="k")
-}
-#' Create the line chart
-#' @export
-eLine = function(...) {
-  echart(...,type="line")
-}
 
-#' Create the bar chart
-#' @export
-eBar = function(...) {
-  echart(...,type="bar")
-}
+
 
 
 #' Create an HTML pie charts widget using the ECharts(version:3.2.2) library
