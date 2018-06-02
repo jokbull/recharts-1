@@ -40,23 +40,7 @@ defaultSetting_common = function(chart, ...) {
       list(
         type = "inside"
       )
-      # list(
-      #   type = "slider",
-      #   show=TRUE,
-      #   yAxisIndex = 0
-      # ),
-      # list(
-      #   type = "inside",
-      #   yAxisIndex = 0
-      # )
     )
-    # xAxis = list(
-    #   splitLine = list(show=TRUE)
-    # )
-    # yAxis = list(
-    #   splitLine = list(show=TRUE)
-    # )
-
   )
 
   if (seriesNumber>1) {

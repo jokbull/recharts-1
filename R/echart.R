@@ -24,7 +24,7 @@ echart.list = function(data, width = NULL, height = NULL, ...) {
 #' @param y the y variable
 #' @rdname eChart
 echart.data.frame = function(
-  data = NULL, x = NULL, y = NULL, series = NULL, type = 'auto',
+  data = NULL, x = NULL, y = NULL, series = NULL, type = c('line', 'scatter', 'bar', 'k', 'radar'),
   width = NULL, height = NULL, theme = c("macarons","infographic","dark","roma","shine","vintage"),
   dependency = NULL, ...
 ) {
@@ -33,24 +33,25 @@ echart.data.frame = function(
   settings = list(...)
   theme = match.arg(theme)
   #
-  type = tolower(type)
+  type = match.arg(type)
+  # type = tolower(type)
 
-  if (type == 'auto') {
-    stop("Sorry, not support auto temporarily.")
-    #type = determineType(x, y)
-    return(invisible(NULL))
-  } else if (type == "line") {
-    suppressMessages(message(paste0("YES, I KNOW THIS TYPE:",type)))
-  } else if (type == "k") {
-    suppressMessages(message(paste0("YES, I KNOW THIS TYPE:",type)))
-  } else if (type == "scatter") {
-    suppressMessages(message(paste0("YES, I KNOW THIS TYPE:",type)))
-  } else if (type == "bar") {
-    suppressMessages(message(paste0("YES, I KNOW THIS TYPE:",type)))
-  } else {
-    suppressMessages(message("Sorry, not support ", type, "temporarily."))
-    return(invisible(NULL))
-  }
+  # if (type == 'auto') {
+  #   stop("Sorry, not support auto temporarily.")
+  #   #type = determineType(x, y)
+  #   return(invisible(NULL))
+  # } else if (type == "line") {
+  #   suppressMessages(message(paste0("YES, I KNOW THIS TYPE:",type)))
+  # } else if (type == "k") {
+  #   suppressMessages(message(paste0("YES, I KNOW THIS TYPE:",type)))
+  # } else if (type == "scatter") {
+  #   suppressMessages(message(paste0("YES, I KNOW THIS TYPE:",type)))
+  # } else if (type == "bar") {
+  #   suppressMessages(message(paste0("YES, I KNOW THIS TYPE:",type)))
+  # } else {
+  #   suppressMessages(message("Sorry, not support ", type, "temporarily."))
+  #   return(invisible(NULL))
+  # }
 
   param_fun = getFromNamespace(paste0('param_', type), 'recharts')
   params = param_fun(data, x, y, series, ...)
